@@ -7,446 +7,123 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:wght@600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0B0F1A;
-    --bg2: #111827;
-    --card: #1A2035;
-    --card2: #1E2642;
-    --border: #2A3454;
-    --text: #E8ECF4;
-    --muted: #8892A8;
-    --dim: #5A6480;
-    --primary: #6B8AEE;
-    --primary-dim: rgba(107,138,238,0.08);
-    --gold: #D4A853;
-    --gold-dim: rgba(212,168,83,0.1);
-    --success: #34D399;
-    --danger: #F87171;
-    --warning: #FBBF24;
+    --bg: #0B0F1A; --bg2: #111827; --card: #1A2035; --card2: #1E2642;
+    --border: #2A3454; --text: #E8ECF4; --muted: #8892A8; --dim: #5A6480;
+    --primary: #6B8AEE; --primary-dim: rgba(107,138,238,0.08);
+    --gold: #D4A853; --gold-dim: rgba(212,168,83,0.1);
+    --success: #34D399; --danger: #F87171; --warning: #FBBF24;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* ── Login Screen ── */
-  .login-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 20px;
-  }
-
-  .login-logo {
-    font-family: 'Newsreader', serif;
-    font-size: 36px;
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
-
+  /* Login */
+  .login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+  .login-logo { font-family: 'Newsreader', serif; font-size: 36px; font-weight: 700; margin-bottom: 8px; }
   .login-logo span:first-child { color: var(--primary); }
+  .login-subtitle { color: var(--muted); font-size: 14px; margin-bottom: 40px; letter-spacing: 0.5px; }
+  .login-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 32px; width: 100%; max-width: 400px; }
+  .login-box h2 { font-size: 18px; margin-bottom: 20px; font-weight: 600; }
+  .login-error { color: var(--danger); font-size: 12px; margin-top: 8px; display: none; }
 
-  .login-subtitle {
-    color: var(--muted);
-    font-size: 14px;
-    margin-bottom: 40px;
-    letter-spacing: 0.5px;
-  }
-
-  .login-box {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px;
-    width: 100%;
-    max-width: 400px;
-  }
-
-  .login-box h2 {
-    font-size: 18px;
-    margin-bottom: 20px;
-    font-weight: 600;
-  }
-
-  .login-error {
-    color: var(--danger);
-    font-size: 12px;
-    margin-top: 8px;
-    display: none;
-  }
-
-  /* ── Inputs ── */
+  /* Fields */
   .field { margin-bottom: 16px; }
-
-  .field label {
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--muted);
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  .field input, .field select, .field textarea {
-    width: 100%;
-    padding: 10px 14px;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .field input:focus, .field select:focus, .field textarea:focus {
-    border-color: var(--primary);
-  }
-
-  .field textarea {
-    min-height: 100px;
-    resize: vertical;
-    line-height: 1.6;
-  }
-
+  .field label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
+  .field input, .field select, .field textarea { width: 100%; padding: 10px 14px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--primary); }
+  .field textarea { min-height: 100px; resize: vertical; line-height: 1.6; }
   .field select { cursor: pointer; }
+  .field .help { font-size: 11px; color: var(--dim); margin-top: 4px; }
 
-  .field .help {
-    font-size: 11px;
-    color: var(--dim);
-    margin-top: 4px;
-  }
-
-  /* ── Buttons ── */
-  .btn {
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: none;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-primary {
-    background: var(--primary);
-    color: white;
-  }
-
-  .btn-primary:hover { filter: brightness(1.1); }
-
-  .btn-gold {
-    background: var(--gold);
-    color: #1A1A1A;
-  }
-
-  .btn-gold:hover { filter: brightness(1.1); }
-
-  .btn-outline {
-    background: transparent;
-    color: var(--muted);
-    border: 1px solid var(--border);
-  }
-
-  .btn-outline:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-
-  .btn-danger {
-    background: rgba(248,113,113,0.1);
-    color: var(--danger);
-    border: 1px solid rgba(248,113,113,0.2);
-  }
-
+  /* Buttons */
+  .btn { padding: 10px 20px; border-radius: 10px; border: none; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.1); }
+  .btn-gold { background: var(--gold); color: #1A1A1A; }
+  .btn-gold:hover:not(:disabled) { filter: brightness(1.1); }
+  .btn-outline { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-danger { background: rgba(248,113,113,0.1); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
   .btn-sm { padding: 6px 12px; font-size: 12px; }
   .btn-full { width: 100%; }
 
-  /* ── App Layout ── */
+  /* Layout */
   .app { display: none; }
-
-  .header {
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    padding: 14px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .header-title {
-    font-family: 'Newsreader', serif;
-    font-size: 20px;
-    font-weight: 700;
-  }
-
+  .header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .header-title { font-family: 'Newsreader', serif; font-size: 20px; font-weight: 700; }
   .header-title span:first-child { color: var(--primary); }
-
-  .header-badge {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--gold);
-    background: var(--gold-dim);
-    padding: 3px 8px;
-    border-radius: 6px;
-    margin-left: 10px;
-  }
-
+  .header-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--gold); background: var(--gold-dim); padding: 3px 8px; border-radius: 6px; margin-left: 10px; }
   .header-actions { display: flex; gap: 8px; align-items: center; }
-
   .main { padding: 24px; max-width: 1100px; margin: 0 auto; }
 
-  /* ── Tab Navigation ── */
-  .tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 24px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0;
-  }
-
-  .tab {
-    padding: 10px 18px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    margin-bottom: -1px;
-  }
-
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .tab { padding: 10px 18px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; margin-bottom: -1px; }
   .tab:hover { color: var(--text); }
   .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-  /* ── Topic List ── */
-  .topic-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 12px;
-  }
-
-  .topic-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .topic-card:hover {
-    border-color: var(--primary);
-    transform: translateY(-2px);
-  }
-
-  .topic-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-
+  /* Topics */
+  .topic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  .topic-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px; cursor: pointer; transition: all 0.2s; }
+  .topic-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+  .topic-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
   .topic-icon { font-size: 24px; }
+  .topic-title { font-size: 16px; font-weight: 700; }
+  .topic-meta { font-size: 12px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
 
-  .topic-title {
-    font-size: 16px;
-    font-weight: 700;
-  }
-
-  .topic-meta {
-    font-size: 12px;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  /* ── Card Editor ── */
+  /* Cards */
   .card-list { display: flex; flex-direction: column; gap: 8px; }
-
-  .card-item {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
+  .card-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s; }
   .card-item:hover { border-color: var(--primary); }
+  .card-item-q { font-family: 'Newsreader', serif; font-size: 15px; font-weight: 600; margin-bottom: 6px; line-height: 1.4; }
+  .card-item-statute { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--dim); }
 
-  .card-item-q {
-    font-family: 'Newsreader', serif;
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    line-height: 1.4;
-  }
+  /* Editor */
+  .editor-panel { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+  .editor-panel h3 { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
+  .editor-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; flex-wrap: wrap; }
 
-  .card-item-statute {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--dim);
-  }
-
-  .card-item-sub {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-
-  /* ── Editor Panel ── */
-  .editor-panel {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-
-  .editor-panel h3 {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 18px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .editor-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 20px;
-    justify-content: flex-end;
-  }
-
-  /* ── PR Panel ── */
-  .pr-panel {
-    background: var(--card);
-    border: 1px solid var(--gold);
-    border-radius: 16px;
-    padding: 24px;
-  }
-
-  .pr-panel h3 {
-    color: var(--gold);
-    font-size: 16px;
-    margin-bottom: 6px;
-  }
-
-  .pr-panel p {
-    color: var(--muted);
-    font-size: 13px;
-    margin-bottom: 16px;
-  }
-
-  .change-list {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    color: var(--success);
-    margin-bottom: 16px;
-    padding: 12px;
-    background: rgba(52, 211, 153, 0.05);
-    border-radius: 8px;
-  }
-
+  /* PR Panel */
+  .pr-panel { background: var(--card); border: 1px solid var(--gold); border-radius: 16px; padding: 24px; }
+  .pr-panel h3 { color: var(--gold); font-size: 16px; margin-bottom: 6px; }
+  .pr-panel p { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .change-list { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--success); margin-bottom: 16px; padding: 12px; background: rgba(52,211,153,0.05); border-radius: 8px; }
   .change-list div { padding: 3px 0; }
 
-  /* ── Breadcrumb ── */
-  .breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 20px;
-    font-size: 13px;
-  }
-
-  .breadcrumb a {
-    color: var(--primary);
-    text-decoration: none;
-    cursor: pointer;
-  }
-
+  /* Breadcrumb */
+  .breadcrumb { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; font-size: 13px; }
+  .breadcrumb a { color: var(--primary); text-decoration: none; cursor: pointer; }
   .breadcrumb a:hover { text-decoration: underline; }
   .breadcrumb span { color: var(--dim); }
 
-  /* ── Status Toast ── */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    padding: 14px 20px;
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 600;
-    z-index: 1000;
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.3s ease;
-  }
-
+  /* Toast */
+  .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 20px; border-radius: 12px; font-size: 13px; font-weight: 600; z-index: 1000; transform: translateY(100px); opacity: 0; transition: all 0.3s ease; max-width: 400px; }
   .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: rgba(52,211,153,0.15); border: 1px solid var(--success); color: var(--success); }
+  .toast.error { background: rgba(248,113,113,0.15); border: 1px solid var(--danger); color: var(--danger); }
 
-  .toast.success {
-    background: rgba(52, 211, 153, 0.15);
-    border: 1px solid var(--success);
-    color: var(--success);
-  }
+  /* Empty & Loading */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+  .empty-state p { font-size: 13px; max-width: 400px; margin: 0 auto 20px; }
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hidden { display: none !important; }
 
-  .toast.error {
-    background: rgba(248, 113, 113, 0.15);
-    border: 1px solid var(--danger);
-    color: var(--danger);
-  }
-
-  /* ── Responsive ── */
   @media (max-width: 640px) {
     .main { padding: 16px; }
     .topic-grid { grid-template-columns: 1fr; }
     .header { padding: 12px 16px; }
     .tabs { overflow-x: auto; }
+    .editor-actions { flex-direction: column; }
+    .editor-actions .btn { width: 100%; }
   }
-
-  /* ── Empty State ── */
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-  }
-
-  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-  .empty-state h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
-  .empty-state p { font-size: 13px; max-width: 400px; margin: 0 auto 20px; }
-
-  /* ── Loading ── */
-  .spinner {
-    width: 32px; height: 32px;
-    border: 3px solid var(--border);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 40px auto;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<!-- ── Login Screen ── -->
+<!-- ════════════ LOGIN ════════════ -->
 <div id="loginScreen" class="login-screen">
   <div class="login-logo"><span>Cuff</span><span>Notes</span></div>
   <div class="login-subtitle">Content Editor</div>
@@ -456,17 +133,12 @@
       <label>Password</label>
       <input type="password" id="loginPassword" placeholder="Enter editor password" onkeydown="if(event.key==='Enter')attemptLogin()">
     </div>
-    <div class="field">
-      <label>GitHub Token</label>
-      <input type="password" id="loginToken" placeholder="ghp_xxxxxxxxxxxx" onkeydown="if(event.key==='Enter')attemptLogin()">
-      <div class="help">Fine-grained PAT with Contents + Pull Requests permissions on cuffnotes-content</div>
-    </div>
-    <button class="btn btn-primary btn-full" onclick="attemptLogin()">Sign In</button>
-    <div id="loginError" class="login-error">Incorrect password</div>
+    <button class="btn btn-primary btn-full" id="loginBtn" onclick="attemptLogin()">Sign In</button>
+    <div id="loginError" class="login-error"></div>
   </div>
 </div>
 
-<!-- ── Main App ── -->
+<!-- ════════════ APP ════════════ -->
 <div id="app" class="app">
   <div class="header">
     <div style="display:flex;align-items:center;">
@@ -474,7 +146,7 @@
       <span class="header-badge">EDITOR</span>
     </div>
     <div class="header-actions">
-      <button class="btn btn-gold btn-sm" id="submitPrBtn" onclick="showSubmitPanel()" style="display:none;">
+      <button class="btn btn-gold btn-sm" id="submitPrBtn" onclick="switchTab('submit')" style="display:none;">
         Submit Changes (<span id="changeCount">0</span>)
       </button>
       <button class="btn btn-outline btn-sm" onclick="logout()">Sign Out</button>
@@ -482,11 +154,10 @@
   </div>
 
   <div class="main">
-    <!-- Tab Navigation -->
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('topics')">Topics</div>
-      <div class="tab" onclick="switchTab('new-topic')">+ New Topic</div>
-      <div class="tab" onclick="switchTab('submit')">Submit PR</div>
+      <div class="tab active" data-tab="topics" onclick="switchTab('topics')">Topics</div>
+      <div class="tab" data-tab="new-topic" onclick="switchTab('new-topic')">+ New Topic</div>
+      <div class="tab" data-tab="submit" onclick="switchTab('submit')">Submit PR</div>
     </div>
 
     <!-- Topics Tab -->
@@ -504,7 +175,7 @@
         <div class="field">
           <label>Topic ID</label>
           <input type="text" id="newTopicId" placeholder="e.g. firearms, mental_health">
-          <div class="help">Lowercase, underscores, no spaces. Used as filename.</div>
+          <div class="help">Lowercase, underscores, no spaces. This becomes the filename.</div>
         </div>
         <div class="field">
           <label>Title</label>
@@ -516,7 +187,7 @@
         </div>
         <div class="field">
           <label>Colour (hex)</label>
-          <input type="text" id="newTopicColor" placeholder="e.g. #E05252" value="#6B8AEE">
+          <input type="text" id="newTopicColor" placeholder="#6B8AEE" value="#6B8AEE">
         </div>
         <div class="field">
           <label>Subcategories (comma separated)</label>
@@ -537,157 +208,184 @@
       </div>
       <div id="prPanel" class="pr-panel hidden">
         <h3>Submit Pull Request</h3>
-        <p>The following changes will be submitted as a PR to the cuffnotes-content repository.</p>
+        <p>These changes will be submitted as a PR to the cuffnotes-content repository for review.</p>
         <div id="changesList" class="change-list"></div>
         <div class="field">
           <label>PR Title</label>
-          <input type="text" id="prTitle" placeholder="e.g. Add firearms content">
+          <input type="text" id="prTitle" placeholder="e.g. Add firearms content, fix typo in theft cards">
         </div>
         <div class="field">
           <label>Description (optional)</label>
           <textarea id="prDescription" placeholder="Describe what you added or changed..."></textarea>
         </div>
         <div class="editor-actions">
-          <button class="btn btn-gold" onclick="submitPR()">Create Pull Request</button>
+          <button class="btn btn-gold" id="prSubmitBtn" onclick="submitPR()">Create Pull Request</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── Toast ── -->
 <div id="toast" class="toast"></div>
 
 <script>
-// ── Config ──
+// ══════════════════════════════════════════════════════════════
+// CONFIGURATION - Your Cloudflare Worker URL
+// ══════════════════════════════════════════════════════════════
+const WORKER_URL = 'https://cuffnotes-api.ashin-ashroff.workers.dev/api';
 const REPO_OWNER = 'aashroff';
 const REPO_NAME = 'cuffnotes-content';
 const CONTENT_PATH = 'content';
-// SHA-256 of your chosen password. Change this hash to set your password.
-// Default: "cuffnotes2026" -> hash below
-const PASSWORD_HASH = '8a5e4b2c3d1f9e0a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4';
 
-let ghToken = '';
+// ── State ──
+let editorPassword = '';
 let topics = {};
 let manifest = null;
 let pendingChanges = {};
-let currentView = 'grid';
 let currentTopicId = null;
 
-// ── Auth ──
-async function sha256(text) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(text);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+// ══════════════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════════════
+async function attemptLogin() {
+  const btn = document.getElementById('loginBtn');
+  const password = document.getElementById('loginPassword').value;
+  if (!password) { showLoginError('Please enter a password'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Connecting...';
+  hideLoginError();
+
+  try {
+    // Verify password against the Worker
+    const res = await fetch(`${WORKER_URL}/contents/${CONTENT_PATH}/manifest.json`, {
+      headers: { 'X-Editor-Password': password }
+    });
+
+    if (res.status === 401) {
+      showLoginError('Incorrect password');
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+      return;
+    }
+
+    if (!res.ok) {
+      showLoginError('Server error (' + res.status + '). Check Worker deployment.');
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+      return;
+    }
+
+    // Success
+    editorPassword = password;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadContent();
+  } catch (e) {
+    showLoginError('Cannot connect to server. Check the Worker URL.');
+    console.error(e);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Sign In';
 }
 
-async function attemptLogin() {
-  const password = document.getElementById('loginPassword').value;
-  const token = document.getElementById('loginToken').value.trim();
+function showLoginError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
 
-  if (!token.startsWith('ghp_') && !token.startsWith('github_pat_')) {
-    document.getElementById('loginError').textContent = 'Invalid GitHub token format';
-    document.getElementById('loginError').style.display = 'block';
-    return;
-  }
-
-  // Verify token works
-  try {
-    const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (!res.ok) throw new Error('Token cannot access repo');
-  } catch (e) {
-    document.getElementById('loginError').textContent = 'GitHub token cannot access the content repo';
-    document.getElementById('loginError').style.display = 'block';
-    return;
-  }
-
-  // Simple password check (compare hash)
-  const hash = await sha256(password);
-  // For first-time setup: uncomment the next line, enter your password, check console, copy the hash, paste above
-  console.log('Password hash:', hash);
-
-  // Accept any non-empty password for now (set up your own hash check)
-  if (!password) {
-    document.getElementById('loginError').textContent = 'Please enter a password';
-    document.getElementById('loginError').style.display = 'block';
-    return;
-  }
-
-  ghToken = token;
-  sessionStorage.setItem('gh_token', token);
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  loadContent();
+function hideLoginError() {
+  document.getElementById('loginError').style.display = 'none';
 }
 
 function logout() {
-  sessionStorage.removeItem('gh_token');
-  ghToken = '';
+  editorPassword = '';
   topics = {};
+  manifest = null;
   pendingChanges = {};
+  currentTopicId = null;
   document.getElementById('loginScreen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('loginPassword').value = '';
-  document.getElementById('loginToken').value = '';
+  updateChangeCounter();
 }
 
-// ── GitHub API ──
-async function ghFetch(path, opts = {}) {
-  const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/${path}`;
-  const headers = {
-    'Authorization': `Bearer ${ghToken}`,
-    'Accept': 'application/vnd.github.v3+json',
-    ...opts.headers
-  };
-  const res = await fetch(url, { ...opts, headers });
-  if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+// ══════════════════════════════════════════════════════════════
+// API - All GitHub calls go through the Cloudflare Worker
+// ══════════════════════════════════════════════════════════════
+async function apiFetch(path, opts = {}) {
+  const url = `${WORKER_URL}/${path}`;
+  const res = await fetch(url, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Editor-Password': editorPassword,
+      ...(opts.headers || {})
+    }
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`API error ${res.status}: ${text.substring(0, 200)}`);
+  }
   return res.json();
 }
 
+// Read raw content from public repo (no auth needed)
 async function getRawContent(filename) {
   const url = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${CONTENT_PATH}/${filename}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch ${filename}`);
+  const res = await fetch(url, { cache: 'no-store' });
+  if (!res.ok) throw new Error(`Failed to fetch ${filename} (${res.status})`);
   return res.json();
 }
 
-// ── Load Content ──
+// ══════════════════════════════════════════════════════════════
+// LOAD CONTENT
+// ══════════════════════════════════════════════════════════════
 async function loadContent() {
-  document.getElementById('loadingSpinner').classList.remove('hidden');
-  document.getElementById('topicGrid').innerHTML = '';
+  const spinner = document.getElementById('loadingSpinner');
+  const grid = document.getElementById('topicGrid');
+  spinner.classList.remove('hidden');
+  grid.innerHTML = '';
+  topics = {};
+
   try {
     manifest = await getRawContent('manifest.json');
-    for (const id of manifest.topics) {
+    const promises = manifest.topics.map(async (id) => {
       try {
         topics[id] = await getRawContent(`${id}.json`);
       } catch (e) {
-        console.warn(`Failed to load topic: ${id}`, e);
+        console.warn(`Skipping topic: ${id}`, e);
       }
-    }
+    });
+    await Promise.all(promises);
     renderTopicGrid();
   } catch (e) {
     showToast('Failed to load content: ' + e.message, 'error');
   }
-  document.getElementById('loadingSpinner').classList.add('hidden');
+
+  spinner.classList.add('hidden');
 }
 
-// ── Render Topics ──
+// ══════════════════════════════════════════════════════════════
+// TOPIC GRID
+// ══════════════════════════════════════════════════════════════
 function renderTopicGrid() {
   const grid = document.getElementById('topicGrid');
   grid.innerHTML = '';
   document.getElementById('topicBreadcrumb').classList.add('hidden');
   document.getElementById('cardView').classList.add('hidden');
-  document.getElementById('topicGrid').classList.remove('hidden');
-  currentView = 'grid';
+  grid.classList.remove('hidden');
   currentTopicId = null;
 
-  for (const [id, topic] of Object.entries(topics)) {
-    const pending = pendingChanges[id];
-    const cardCount = topic.cards ? topic.cards.length : 0;
-    const badge = pending ? `<span style="color:var(--gold);font-size:11px;"> (modified)</span>` : '';
+  const allTopicIds = [...new Set([...Object.keys(topics), ...Object.keys(pendingChanges).filter(k => k !== '__manifest')])];
+
+  for (const id of allTopicIds) {
+    const topic = pendingChanges[id] || topics[id];
+    if (!topic || !topic.title) continue;
+    const modified = pendingChanges[id] ? '<span style="color:var(--gold);font-size:11px;margin-left:6px;">(modified)</span>' : '';
+    const cardCount = (topic.cards || []).length;
 
     const el = document.createElement('div');
     el.className = 'topic-card';
@@ -695,28 +393,32 @@ function renderTopicGrid() {
     el.innerHTML = `
       <div class="topic-header">
         <span class="topic-icon">${topic.icon || '📚'}</span>
-        <span class="topic-title">${topic.title}${badge}</span>
+        <span class="topic-title">${topic.title}${modified}</span>
       </div>
-      <div class="topic-meta">${cardCount} cards · ${(topic.subcategories || []).length} subcategories</div>
+      <div class="topic-meta">${cardCount} cards &middot; ${(topic.subcategories || []).length} subcategories</div>
     `;
     grid.appendChild(el);
   }
+
+  if (allTopicIds.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="icon">📚</div><h3>No Topics Found</h3><p>Content could not be loaded from the repository.</p></div>';
+  }
 }
 
-// ── Open Topic ──
-function openTopic(topicId) {
-  currentTopicId = topicId;
-  currentView = 'cards';
-  const topic = pendingChanges[topicId] || topics[topicId];
+// ══════════════════════════════════════════════════════════════
+// TOPIC DETAIL - Card List
+// ══════════════════════════════════════════════════════════════
+function openTopic(id) {
+  currentTopicId = id;
+  const topic = pendingChanges[id] || topics[id];
 
   document.getElementById('topicGrid').classList.add('hidden');
   document.getElementById('cardView').classList.remove('hidden');
   document.getElementById('topicBreadcrumb').classList.remove('hidden');
-
   document.getElementById('topicBreadcrumb').innerHTML = `
     <a onclick="renderTopicGrid()">Topics</a>
-    <span>/</span>
-    <span>${topic.icon} ${topic.title}</span>
+    <span>&rsaquo;</span>
+    <span>${topic.icon || ''} ${topic.title}</span>
   `;
 
   renderCards(topic);
@@ -728,9 +430,9 @@ function renderCards(topic) {
   const subs = topic.subcategories || [];
 
   let html = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
       <div>
-        <span style="font-size:18px;font-weight:700;">${topic.icon} ${topic.title}</span>
+        <span style="font-size:18px;font-weight:700;">${topic.icon || ''} ${topic.title}</span>
         <span style="color:var(--muted);font-size:13px;margin-left:8px;">${cards.length} cards</span>
       </div>
       <button class="btn btn-primary btn-sm" onclick="showAddCard('${topic.id}')">+ Add Card</button>
@@ -740,51 +442,61 @@ function renderCards(topic) {
   // Group by subcategory
   for (const sub of subs) {
     const subCards = cards.filter(c => c.subcategory === sub);
-    html += `<div style="margin-bottom:20px;">
-      <div style="font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">${sub} (${subCards.length})</div>
-      <div class="card-list">`;
-    for (const card of subCards) {
-      html += `
-        <div class="card-item" onclick="editCard('${topic.id}','${card.id}')">
-          <div class="card-item-q">${card.question}</div>
-          <div class="card-item-statute">${card.statute}</div>
-        </div>`;
-    }
-    html += `</div></div>`;
+    if (subCards.length === 0) continue;
+    html += `
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">${sub} (${subCards.length})</div>
+        <div class="card-list">
+          ${subCards.map(card => `
+            <div class="card-item" onclick="editCard('${topic.id}','${card.id}')">
+              <div class="card-item-q">${escHtml(card.question)}</div>
+              <div class="card-item-statute">${escHtml(card.statute)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
   }
 
-  // Uncategorised
-  const uncategorised = cards.filter(c => !subs.includes(c.subcategory));
-  if (uncategorised.length > 0) {
-    html += `<div style="margin-bottom:20px;">
-      <div style="font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Other (${uncategorised.length})</div>
-      <div class="card-list">`;
-    for (const card of uncategorised) {
-      html += `
-        <div class="card-item" onclick="editCard('${topic.id}','${card.id}')">
-          <div class="card-item-q">${card.question}</div>
-          <div class="card-item-statute">${card.statute}</div>
-        </div>`;
-    }
-    html += `</div></div>`;
+  // Uncategorised cards
+  const other = cards.filter(c => !subs.includes(c.subcategory));
+  if (other.length > 0) {
+    html += `
+      <div style="margin-bottom:20px;">
+        <div style="font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;">Other (${other.length})</div>
+        <div class="card-list">
+          ${other.map(card => `
+            <div class="card-item" onclick="editCard('${topic.id}','${card.id}')">
+              <div class="card-item-q">${escHtml(card.question)}</div>
+              <div class="card-item-statute">${escHtml(card.statute)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if (cards.length === 0) {
+    html += '<div class="empty-state"><div class="icon">📇</div><h3>No Cards Yet</h3><p>Click "+ Add Card" to create your first flashcard for this topic.</p></div>';
   }
 
   view.innerHTML = html;
 }
 
-// ── Add Card ──
+// ══════════════════════════════════════════════════════════════
+// ADD CARD
+// ══════════════════════════════════════════════════════════════
 function showAddCard(topicId) {
   const topic = pendingChanges[topicId] || topics[topicId];
-  const subs = (topic.subcategories || []).map(s => `<option value="${s}">${s}</option>`).join('');
-  const nextNum = (topic.cards || []).length + 1;
+  const subs = (topic.subcategories || []).map(s => `<option value="${escAttr(s)}">${escHtml(s)}</option>`).join('');
+  const n = (topic.cards || []).length + 1;
   const prefix = topicId.substring(0, 2);
-  const nextId = `${prefix}${String(nextNum).padStart(2, '0')}`;
+  const nextId = `${prefix}${String(n).padStart(2, '0')}`;
 
-  const view = document.getElementById('cardView');
-  view.innerHTML = `
+  document.getElementById('cardView').innerHTML = `
     <div class="breadcrumb">
-      <a onclick="renderTopicGrid()">Topics</a><span>/</span>
-      <a onclick="openTopic('${topicId}')">${topic.title}</a><span>/</span>
+      <a onclick="renderTopicGrid()">Topics</a><span>&rsaquo;</span>
+      <a onclick="openTopic('${topicId}')">${escHtml(topic.title)}</a><span>&rsaquo;</span>
       <span>New Card</span>
     </div>
     <div class="editor-panel">
@@ -792,6 +504,7 @@ function showAddCard(topicId) {
       <div class="field">
         <label>Card ID</label>
         <input type="text" id="editCardId" value="${nextId}">
+        <div class="help">Short unique ID, e.g. rt01, dr05</div>
       </div>
       <div class="field">
         <label>Question</label>
@@ -799,18 +512,18 @@ function showAddCard(topicId) {
       </div>
       <div class="field">
         <label>Answer</label>
-        <textarea id="editCardAnswer" rows="6" placeholder="Full answer with legal detail..."></textarea>
+        <textarea id="editCardAnswer" rows="6" placeholder="Full answer with legal detail, penalties, and key points..."></textarea>
       </div>
       <div class="field">
         <label>Statute Reference</label>
-        <input type="text" id="editCardStatute" placeholder="e.g. Theft Act 1968, s.1(1)">
+        <input type="text" id="editCardStatute" placeholder="e.g. Road Traffic Act 1988, s.5">
       </div>
       <div class="field">
         <label>Subcategory</label>
         <select id="editCardSub"><option value="">Select...</option>${subs}</select>
       </div>
       <div class="field">
-        <label>Difficulty (1-3)</label>
+        <label>Difficulty</label>
         <select id="editCardDiff">
           <option value="1">1 - Basic</option>
           <option value="2" selected>2 - Intermediate</option>
@@ -841,76 +554,82 @@ function saveNewCard(topicId) {
   };
 
   if (!card.id || !card.question || !card.answer) {
-    showToast('Please fill in ID, question, and answer', 'error');
+    showToast('Please fill in Card ID, Question, and Answer', 'error');
     return;
   }
 
   const topic = JSON.parse(JSON.stringify(pendingChanges[topicId] || topics[topicId]));
-  topic.cards = topic.cards || [];
+
+  // Check for duplicate ID
+  if (topic.cards.some(c => c.id === card.id)) {
+    showToast('A card with this ID already exists', 'error');
+    return;
+  }
+
   topic.cards.push(card);
   topic.version = (topic.version || 1) + 1;
-
   pendingChanges[topicId] = topic;
   updateChangeCounter();
-  showToast('Card added to ' + topic.title, 'success');
+  showToast(`Card "${card.id}" added to ${topic.title}`, 'success');
   openTopic(topicId);
 }
 
-// ── Edit Card ──
+// ══════════════════════════════════════════════════════════════
+// EDIT CARD
+// ══════════════════════════════════════════════════════════════
 function editCard(topicId, cardId) {
   const topic = pendingChanges[topicId] || topics[topicId];
-  const card = topic.cards.find(c => c.id === cardId);
+  const card = (topic.cards || []).find(c => c.id === cardId);
   if (!card) return;
 
   const subs = (topic.subcategories || []).map(s =>
-    `<option value="${s}" ${s === card.subcategory ? 'selected' : ''}>${s}</option>`
+    `<option value="${escAttr(s)}" ${s === card.subcategory ? 'selected' : ''}>${escHtml(s)}</option>`
   ).join('');
 
-  const view = document.getElementById('cardView');
-  view.innerHTML = `
+  document.getElementById('cardView').innerHTML = `
     <div class="breadcrumb">
-      <a onclick="renderTopicGrid()">Topics</a><span>/</span>
-      <a onclick="openTopic('${topicId}')">${topic.title}</a><span>/</span>
-      <span>Edit ${card.id}</span>
+      <a onclick="renderTopicGrid()">Topics</a><span>&rsaquo;</span>
+      <a onclick="openTopic('${topicId}')">${escHtml(topic.title)}</a><span>&rsaquo;</span>
+      <span>Edit ${escHtml(card.id)}</span>
     </div>
     <div class="editor-panel">
       <h3>Edit Flashcard</h3>
       <div class="field">
         <label>Card ID</label>
-        <input type="text" id="editCardId" value="${card.id}" readonly style="opacity:0.6;">
+        <input type="text" id="editCardId" value="${escAttr(card.id)}" readonly style="opacity:0.6;">
       </div>
       <div class="field">
         <label>Question</label>
-        <textarea id="editCardQuestion" rows="3">${card.question}</textarea>
+        <textarea id="editCardQuestion" rows="3">${escHtml(card.question)}</textarea>
       </div>
       <div class="field">
         <label>Answer</label>
-        <textarea id="editCardAnswer" rows="6">${card.answer}</textarea>
+        <textarea id="editCardAnswer" rows="6">${escHtml(card.answer)}</textarea>
       </div>
       <div class="field">
         <label>Statute Reference</label>
-        <input type="text" id="editCardStatute" value="${card.statute}">
+        <input type="text" id="editCardStatute" value="${escAttr(card.statute)}">
       </div>
       <div class="field">
         <label>Subcategory</label>
         <select id="editCardSub"><option value="">Select...</option>${subs}</select>
       </div>
       <div class="field">
-        <label>Difficulty (1-3)</label>
+        <label>Difficulty</label>
         <select id="editCardDiff">
-          <option value="1" ${card.difficulty === 1 ? 'selected' : ''}>1 - Basic</option>
-          <option value="2" ${card.difficulty === 2 ? 'selected' : ''}>2 - Intermediate</option>
-          <option value="3" ${card.difficulty === 3 ? 'selected' : ''}>3 - Advanced</option>
+          <option value="1" ${card.difficulty===1?'selected':''}>1 - Basic</option>
+          <option value="2" ${card.difficulty===2?'selected':''}>2 - Intermediate</option>
+          <option value="3" ${card.difficulty===3?'selected':''}>3 - Advanced</option>
         </select>
       </div>
       <div class="field">
         <label>Tags (comma separated)</label>
-        <input type="text" id="editCardTags" value="${(card.tags || []).join(', ')}">
+        <input type="text" id="editCardTags" value="${escAttr((card.tags || []).join(', '))}">
       </div>
       <div class="editor-actions">
-        <button class="btn btn-danger btn-sm" onclick="deleteCard('${topicId}','${cardId}')">Delete Card</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteCard('${topicId}','${escAttr(cardId)}')">Delete Card</button>
         <button class="btn btn-outline" onclick="openTopic('${topicId}')">Cancel</button>
-        <button class="btn btn-primary" onclick="saveEditCard('${topicId}','${cardId}')">Save Changes</button>
+        <button class="btn btn-primary" onclick="saveEditCard('${topicId}','${escAttr(cardId)}')">Save Changes</button>
       </div>
     </div>
   `;
@@ -931,7 +650,6 @@ function saveEditCard(topicId, cardId) {
     tags: document.getElementById('editCardTags').value.split(',').map(t => t.trim()).filter(Boolean)
   };
   topic.version = (topic.version || 1) + 1;
-
   pendingChanges[topicId] = topic;
   updateChangeCounter();
   showToast('Card updated', 'success');
@@ -939,7 +657,7 @@ function saveEditCard(topicId, cardId) {
 }
 
 function deleteCard(topicId, cardId) {
-  if (!confirm('Delete this card? This will be included in the PR.')) return;
+  if (!confirm('Delete this card? The deletion will be included in your PR.')) return;
   const topic = JSON.parse(JSON.stringify(pendingChanges[topicId] || topics[topicId]));
   topic.cards = topic.cards.filter(c => c.id !== cardId);
   topic.version = (topic.version || 1) + 1;
@@ -949,12 +667,14 @@ function deleteCard(topicId, cardId) {
   openTopic(topicId);
 }
 
-// ── Create Topic ──
+// ══════════════════════════════════════════════════════════════
+// CREATE TOPIC
+// ══════════════════════════════════════════════════════════════
 function createTopic() {
-  const id = document.getElementById('newTopicId').value.trim().toLowerCase().replace(/\s+/g, '_');
+  const id = document.getElementById('newTopicId').value.trim().toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
   const title = document.getElementById('newTopicTitle').value.trim();
-  const icon = document.getElementById('newTopicIcon').value.trim();
-  const color = document.getElementById('newTopicColor').value.trim();
+  const icon = document.getElementById('newTopicIcon').value.trim() || '📚';
+  const color = document.getElementById('newTopicColor').value.trim() || '#6B8AEE';
   const subs = document.getElementById('newTopicSubs').value.split(',').map(s => s.trim()).filter(Boolean);
 
   if (!id || !title) {
@@ -967,158 +687,140 @@ function createTopic() {
     return;
   }
 
-  const topic = {
-    id, title, icon: icon || '📚', color: color || '#6B8AEE',
-    version: 1,
-    subcategories: subs,
-    cards: []
-  };
-
+  const topic = { id, title, icon, color, version: 1, subcategories: subs, cards: [] };
   topics[id] = topic;
   pendingChanges[id] = topic;
   pendingChanges['__manifest'] = true;
 
   // Clear form
-  ['newTopicId','newTopicTitle','newTopicIcon','newTopicSubs'].forEach(f => document.getElementById(f).value = '');
+  document.getElementById('newTopicId').value = '';
+  document.getElementById('newTopicTitle').value = '';
+  document.getElementById('newTopicIcon').value = '';
   document.getElementById('newTopicColor').value = '#6B8AEE';
+  document.getElementById('newTopicSubs').value = '';
 
   updateChangeCounter();
-  showToast(`Topic "${title}" created. Add cards to it from the Topics tab.`, 'success');
+  showToast(`Topic "${title}" created! Add cards from the Topics tab.`, 'success');
   switchTab('topics');
 }
 
-// ── Submit PR ──
-function showSubmitPanel() {
-  switchTab('submit');
-}
-
+// ══════════════════════════════════════════════════════════════
+// SUBMIT PULL REQUEST
+// ══════════════════════════════════════════════════════════════
 async function submitPR() {
   const title = document.getElementById('prTitle').value.trim();
-  const description = document.getElementById('prDescription').value.trim();
+  const desc = document.getElementById('prDescription').value.trim();
+  const btn = document.getElementById('prSubmitBtn');
 
-  if (!title) {
-    showToast('Please enter a PR title', 'error');
-    return;
-  }
+  if (!title) { showToast('Please enter a PR title', 'error'); return; }
 
-  const changedTopics = Object.keys(pendingChanges).filter(k => k !== '__manifest');
-  if (changedTopics.length === 0) {
-    showToast('No changes to submit', 'error');
-    return;
-  }
+  const changedTopicIds = Object.keys(pendingChanges).filter(k => k !== '__manifest');
+  if (changedTopicIds.length === 0) { showToast('No changes to submit', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Creating PR...';
 
   try {
-    showToast('Creating pull request...', 'success');
-
     // 1. Get main branch SHA
-    const mainRef = await ghFetch('git/ref/heads/main');
+    const mainRef = await apiFetch('git/ref/heads/main');
     const baseSha = mainRef.object.sha;
 
-    // 2. Create branch
-    const branchName = `content/${Date.now()}`;
-    await ghFetch('git/refs', {
+    // 2. Create a new branch
+    const branchName = `content-update-${Date.now()}`;
+    await apiFetch('git/refs', {
       method: 'POST',
       body: JSON.stringify({ ref: `refs/heads/${branchName}`, sha: baseSha })
     });
 
-    // 3. Commit each changed file
-    for (const topicId of changedTopics) {
-      const content = JSON.stringify(pendingChanges[topicId], null, 2);
-      const encoded = btoa(unescape(encodeURIComponent(content)));
+    // 3. Commit each changed topic file
+    for (const topicId of changedTopicIds) {
+      const jsonContent = JSON.stringify(pendingChanges[topicId], null, 2);
+      const encoded = btoa(unescape(encodeURIComponent(jsonContent)));
       const filePath = `${CONTENT_PATH}/${topicId}.json`;
 
-      // Get current file SHA if it exists
-      let fileSha = null;
+      // Check if file already exists (to get SHA for update)
+      let existingSha = null;
       try {
-        const existing = await ghFetch(`contents/${filePath}?ref=main`);
-        fileSha = existing.sha;
-      } catch (e) {}
+        const existing = await apiFetch(`contents/${filePath}?ref=main`);
+        existingSha = existing.sha;
+      } catch (e) { /* New file */ }
 
-      const body = {
+      const commitBody = {
         message: `Update ${topicId}`,
         content: encoded,
         branch: branchName
       };
-      if (fileSha) body.sha = fileSha;
+      if (existingSha) commitBody.sha = existingSha;
 
-      await ghFetch(`contents/${filePath}`, {
+      await apiFetch(`contents/${filePath}`, {
         method: 'PUT',
-        body: JSON.stringify(body)
+        body: JSON.stringify(commitBody)
       });
     }
 
     // 4. Update manifest if new topics were added
     if (pendingChanges['__manifest']) {
-      const newManifest = {
+      const updatedManifest = {
         version: (manifest.version || 1) + 1,
-        topics: Object.keys(topics)
+        topics: [...new Set([...manifest.topics, ...changedTopicIds])]
       };
-      const content = JSON.stringify(newManifest, null, 2);
-      const encoded = btoa(unescape(encodeURIComponent(content)));
+      const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(updatedManifest, null, 2))));
 
       let manifestSha = null;
       try {
-        const existing = await ghFetch(`contents/${CONTENT_PATH}/manifest.json?ref=main`);
+        const existing = await apiFetch(`contents/${CONTENT_PATH}/manifest.json?ref=main`);
         manifestSha = existing.sha;
       } catch (e) {}
 
-      const body = {
-        message: 'Update manifest',
-        content: encoded,
-        branch: branchName
-      };
+      const body = { message: 'Update manifest', content: encoded, branch: branchName };
       if (manifestSha) body.sha = manifestSha;
 
-      await ghFetch(`contents/${CONTENT_PATH}/manifest.json`, {
+      await apiFetch(`contents/${CONTENT_PATH}/manifest.json`, {
         method: 'PUT',
         body: JSON.stringify(body)
       });
     }
 
-    // 5. Create PR
-    const pr = await ghFetch('pulls', {
+    // 5. Create the pull request
+    const pr = await apiFetch('pulls', {
       method: 'POST',
       body: JSON.stringify({
-        title,
-        body: description || 'Content update via CuffNotes Editor',
+        title: title,
+        body: desc || 'Content update submitted via CuffNotes Editor',
         head: branchName,
         base: 'main'
       })
     });
 
-    // 6. Clear pending changes
+    // 6. Success - clear state and reload
     pendingChanges = {};
     updateChangeCounter();
     showToast('Pull request created successfully!', 'success');
-
-    // Open PR in new tab
     window.open(pr.html_url, '_blank');
-
-    // Reload content
     await loadContent();
     switchTab('topics');
 
   } catch (e) {
     showToast('Failed to create PR: ' + e.message, 'error');
-    console.error(e);
+    console.error('PR submission error:', e);
   }
+
+  btn.disabled = false;
+  btn.textContent = 'Create Pull Request';
 }
 
-// ── UI Helpers ──
+// ══════════════════════════════════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════════════════════════════════
 function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('[id^="tab-"]').forEach(t => t.classList.add('hidden'));
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.add('hidden'));
 
-  const tabEl = document.getElementById(`tab-${name}`);
-  if (tabEl) tabEl.classList.remove('hidden');
+  const tabContent = document.getElementById(`tab-${name}`);
+  if (tabContent) tabContent.classList.remove('hidden');
 
   document.querySelectorAll('.tab').forEach(t => {
-    if (t.textContent.toLowerCase().includes(name.replace('-', ' ')) ||
-        (name === 'topics' && t.textContent === 'Topics') ||
-        (name === 'new-topic' && t.textContent === '+ New Topic') ||
-        (name === 'submit' && t.textContent === 'Submit PR')) {
-      t.classList.add('active');
-    }
+    if (t.getAttribute('data-tab') === name) t.classList.add('active');
   });
 
   if (name === 'topics') renderTopicGrid();
@@ -1126,19 +828,25 @@ function switchTab(name) {
 }
 
 function renderSubmitTab() {
-  const changedTopics = Object.keys(pendingChanges).filter(k => k !== '__manifest');
-  if (changedTopics.length === 0) {
-    document.getElementById('noChanges').classList.remove('hidden');
-    document.getElementById('prPanel').classList.add('hidden');
+  const changedIds = Object.keys(pendingChanges).filter(k => k !== '__manifest');
+  const noChanges = document.getElementById('noChanges');
+  const prPanel = document.getElementById('prPanel');
+
+  if (changedIds.length === 0) {
+    noChanges.classList.remove('hidden');
+    prPanel.classList.add('hidden');
   } else {
-    document.getElementById('noChanges').classList.add('hidden');
-    document.getElementById('prPanel').classList.remove('hidden');
-    const list = document.getElementById('changesList');
-    list.innerHTML = changedTopics.map(id => {
+    noChanges.classList.add('hidden');
+    prPanel.classList.remove('hidden');
+
+    document.getElementById('changesList').innerHTML = changedIds.map(id => {
       const topic = pendingChanges[id];
-      const original = topics[id];
-      const isNew = !original || original === topic;
-      return `<div>+ ${topic.title} (${topic.cards.length} cards)${isNew ? ' [NEW]' : ' [MODIFIED]'}</div>`;
+      const isNew = !topics[id] || topics[id] === topic;
+      const originalCount = topics[id] ? topics[id].cards.length : 0;
+      const newCount = topic.cards.length;
+      const diff = newCount - originalCount;
+      const diffStr = diff > 0 ? ` (+${diff} cards)` : diff < 0 ? ` (${diff} cards)` : ' (edited)';
+      return `<div>+ ${topic.icon || ''} ${topic.title} - ${newCount} cards${isNew && !topics[id] ? ' [NEW TOPIC]' : diffStr}</div>`;
     }).join('');
   }
 }
@@ -1153,16 +861,18 @@ function showToast(msg, type) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
   toast.className = `toast ${type} show`;
-  setTimeout(() => toast.classList.remove('show'), 3500);
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 4000);
 }
 
-// ── Init ──
-const savedToken = sessionStorage.getItem('gh_token');
-if (savedToken) {
-  ghToken = savedToken;
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  loadContent();
+function escHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+function escAttr(str) {
+  return (str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 </script>
 </body>
