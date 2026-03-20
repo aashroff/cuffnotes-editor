@@ -66,11 +66,11 @@
   .card-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; transition: all 0.2s; }
   .card-item:hover { border-color: var(--primary); }
   .card-item[draggable="true"] { cursor: grab; }
-  .card-item.dragging { opacity: 0.3; }
-  .card-item.drag-over { border-color: var(--gold); border-style: dashed; }
+  .card-item.dragging, .ref-item.dragging, .acr-item.dragging { opacity: 0.3; }
+  .card-item.drag-over, .ref-item.drag-over, .acr-item.drag-over { border-color: var(--gold); border-style: dashed; }
   .card-item-q { font-family: 'Newsreader', serif; font-size: 15px; font-weight: 600; margin-bottom: 6px; line-height: 1.4; cursor: pointer; }
   .card-item-statute { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--dim); }
-  .drag-handle { color: var(--dim); margin-right: 10px; cursor: grab; font-size: 16px; user-select: none; flex-shrink: 0; padding-top: 2px; }
+  .drag-handle { color: var(--dim); margin-right: 10px; cursor: grab; font-size: 16px; user-select: none; flex-shrink: 0; padding-top: 2px; touch-action: none; }
   .editor-panel { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
   .editor-panel h3 { font-size: 16px; font-weight: 700; margin-bottom: 18px; }
   .editor-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; flex-wrap: wrap; }
@@ -86,16 +86,12 @@
   .ref-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 8px; transition: all 0.2s; }
   .ref-item:hover { border-color: var(--purple); }
   .ref-item[draggable="true"] { cursor: grab; }
-  .ref-item.dragging { opacity: 0.3; }
-  .ref-item.drag-over { border-color: var(--gold); border-style: dashed; }
   .ref-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
   .ref-sub { font-size: 11px; color: var(--muted); }
   .ref-count { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--dim); margin-top: 4px; }
   .acr-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 6px; display: flex; align-items: start; gap: 12px; transition: all 0.2s; }
   .acr-item:hover { border-color: var(--primary); }
   .acr-item[draggable="true"] { cursor: grab; }
-  .acr-item.dragging { opacity: 0.3; }
-  .acr-item.drag-over { border-color: var(--gold); border-style: dashed; }
   .acr-badge { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: var(--primary); background: var(--primary-dim); padding: 4px 8px; border-radius: 6px; min-width: 50px; text-align: center; flex-shrink: 0; }
   .acr-meaning { font-size: 13px; font-weight: 600; }
   .acr-context { font-size: 11px; color: var(--muted); margin-top: 2px; }
@@ -110,6 +106,7 @@
   .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .hidden { display: none !important; }
+  .touch-clone { position: fixed; z-index: 9999; pointer-events: none; opacity: 0.85; border: 2px solid var(--gold); border-radius: 12px; background: var(--card); }
   @media (max-width: 640px) { .main { padding: 16px; } .topic-grid { grid-template-columns: 1fr; } .header { padding: 12px 16px; } .editor-actions { flex-direction: column; } .editor-actions .btn { width: 100%; } }
 </style>
 </head>
@@ -193,7 +190,87 @@ function renderCards(topic){const v=document.getElementById('cardView');const ca
 
 function cardHtml(tid,c){return `<div class="card-item" draggable="true" data-card-id="${esc(c.id)}" data-topic-id="${tid}"><div style="display:flex;align-items:start;"><span class="drag-handle">⠿</span><div style="flex:1;" onclick="editCard('${tid}','${esc(c.id)}')"><div class="card-item-q">${escH(c.question)}</div><div class="card-item-statute">${escH(c.statute)}</div></div></div></div>`;}
 
-function initCardDrag(){let d=null;document.querySelectorAll('.card-item[draggable]').forEach(el=>{el.addEventListener('dragstart',e=>{d=el;el.classList.add('dragging');e.dataTransfer.effectAllowed='move';});el.addEventListener('dragend',()=>{el.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));d=null;});el.addEventListener('dragover',e=>{e.preventDefault();if(d&&d!==el)el.classList.add('drag-over');});el.addEventListener('dragleave',()=>el.classList.remove('drag-over'));el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('drag-over');if(!d||d===el)return;reorderCard(d.dataset.topicId,d.dataset.cardId,el.dataset.cardId);});});}
+// ══════════════ UNIFIED DRAG (Desktop + Touch) ══════════════
+function setupDrag(selector, onDrop) {
+  let dragged = null;
+  const items = document.querySelectorAll(selector);
+  // Desktop
+  items.forEach(el => {
+    el.addEventListener('dragstart', e => { dragged = el; el.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; });
+    el.addEventListener('dragend', () => { el.classList.remove('dragging'); document.querySelectorAll('.drag-over').forEach(x => x.classList.remove('drag-over')); dragged = null; });
+    el.addEventListener('dragover', e => { e.preventDefault(); if (dragged && dragged !== el) el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('drag-over'); if (!dragged || dragged === el) return; onDrop(dragged, el); dragged = null; });
+  });
+  // Touch
+  let touchItem = null, clone = null, touchMoved = false;
+  document.querySelectorAll(selector + ' .drag-handle').forEach(handle => {
+    handle.addEventListener('touchstart', function(e) {
+      touchItem = this.closest(selector);
+      touchMoved = false;
+      setTimeout(() => {
+        if (!touchItem) return;
+        touchItem.classList.add('dragging');
+        clone = touchItem.cloneNode(true);
+        clone.className = 'touch-clone';
+        clone.style.width = touchItem.offsetWidth + 'px';
+        clone.style.left = touchItem.getBoundingClientRect().left + 'px';
+        clone.style.top = e.touches[0].clientY + 'px';
+        clone.style.transform = 'translateY(-50%)';
+        clone.style.padding = '14px';
+        document.body.appendChild(clone);
+      }, 120);
+    }, { passive: true });
+
+    handle.addEventListener('touchmove', function(e) {
+      if (!touchItem) return;
+      touchMoved = true;
+      e.preventDefault();
+      const y = e.touches[0].clientY;
+      if (clone) clone.style.top = y + 'px';
+      document.querySelectorAll(selector).forEach(el => {
+        el.classList.remove('drag-over');
+        const r = el.getBoundingClientRect();
+        if (y > r.top && y < r.bottom && el !== touchItem) el.classList.add('drag-over');
+      });
+    }, { passive: false });
+
+    handle.addEventListener('touchend', function() {
+      if (clone) { clone.remove(); clone = null; }
+      if (!touchItem) return;
+      touchItem.classList.remove('dragging');
+      const target = document.querySelector(selector + '.drag-over');
+      document.querySelectorAll('.drag-over').forEach(x => x.classList.remove('drag-over'));
+      if (target && target !== touchItem && touchMoved) onDrop(touchItem, target);
+      touchItem = null; touchMoved = false;
+    }, { passive: true });
+  });
+}
+
+function initCardDrag() {
+  setupDrag('.card-item[draggable]', function(from, to) {
+    reorderCard(from.dataset.topicId, from.dataset.cardId, to.dataset.cardId);
+  });
+}
+function initRefDrag() {
+  setupDrag('.ref-item[draggable]', function(from, to) {
+    const fi = parseInt(from.dataset.refIdx), ti = parseInt(to.dataset.refIdx);
+    const data = JSON.parse(JSON.stringify(pendingChanges['reference'] || referenceData));
+    const [m] = data.sections.splice(fi, 1); data.sections.splice(ti, 0, m);
+    data.version = (data.version || 1) + 1;
+    pendingChanges['reference'] = data; updateChangeCounter(); renderRefList(); showToast('Reordered', 'success');
+  });
+}
+function initAcrDrag() {
+  setupDrag('.acr-item[draggable]', function(from, to) {
+    const fi = parseInt(from.dataset.acrIdx), ti = parseInt(to.dataset.acrIdx);
+    const data = JSON.parse(JSON.stringify(pendingChanges['acronyms'] || acronymsData));
+    const [m] = data.acronyms.splice(fi, 1); data.acronyms.splice(ti, 0, m);
+    data.version = (data.version || 1) + 1;
+    pendingChanges['acronyms'] = data; updateChangeCounter(); renderAcrList(); showToast('Reordered', 'success');
+  });
+}
+
 function reorderCard(tid,fromId,toId){const t=JSON.parse(JSON.stringify(pendingChanges[tid]||topics[tid]));const fi=t.cards.findIndex(c=>c.id===fromId),ti=t.cards.findIndex(c=>c.id===toId);if(fi===-1||ti===-1)return;const[m]=t.cards.splice(fi,1);t.cards.splice(ti,0,m);t.version=(t.version||1)+1;pendingChanges[tid]=t;updateChangeCounter();renderCards(t);showToast('Reordered','success');}
 
 function showAddCard(tid){const t=pendingChanges[tid]||topics[tid];const subs=(t.subcategories||[]).map(s=>`<option value="${esc(s)}">${escH(s)}</option>`).join('');const n=(t.cards||[]).length+1,nid=`${tid.substring(0,2)}${String(n).padStart(2,'0')}`;document.getElementById('cardView').innerHTML=`<div class="breadcrumb"><a onclick="renderTopicGrid()">Topics</a><span>&rsaquo;</span><a onclick="openTopic('${tid}')">${escH(t.title)}</a><span>&rsaquo;</span><span>New Card</span></div><div class="editor-panel"><h3>Add New Flashcard</h3><div class="field"><label>Card ID</label><input type="text" id="eId" value="${nid}"></div><div class="field"><label>Question</label><textarea id="eQ" rows="3"></textarea></div><div class="field"><label>Answer</label><textarea id="eA" rows="6"></textarea></div><div class="field"><label>Statute</label><input type="text" id="eS" placeholder="e.g. RTA 1988, s.5"></div><div class="field"><label>Subcategory</label><select id="eSub"><option value="">Select...</option>${subs}</select></div><div class="field"><label>Difficulty</label><select id="eD"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option></select></div><div class="field"><label>Tags (comma separated)</label><input type="text" id="eT"></div><div class="editor-actions"><button class="btn btn-outline" onclick="openTopic('${tid}')">Cancel</button><button class="btn btn-primary" onclick="saveNew('${tid}')">Add Card</button></div></div>`;}
@@ -210,14 +287,12 @@ function addRefItem(){const c=document.getElementById('refItems');const d=docume
 function saveRefSection(idx){const data=JSON.parse(JSON.stringify(pendingChanges['reference']||referenceData));const items=[];document.getElementById('refItems').querySelectorAll('div').forEach(row=>{const letter=row.querySelector('[data-ref-letter]')?.value?.trim();const text=row.querySelector('[data-ref-text]')?.value?.trim();if(letter&&text)items.push({letter,text});});data.sections[idx]={...data.sections[idx],title:document.getElementById('refTitle').value.trim(),subtitle:document.getElementById('refSub').value.trim(),color:document.getElementById('refColor').value.trim(),items};data.version=(data.version||1)+1;pendingChanges['reference']=data;updateChangeCounter();showToast('Saved','success');renderRefList();}
 function delRefSection(idx){if(!confirm('Delete this section?'))return;const data=JSON.parse(JSON.stringify(pendingChanges['reference']||referenceData));data.sections.splice(idx,1);data.version=(data.version||1)+1;pendingChanges['reference']=data;updateChangeCounter();showToast('Deleted','success');renderRefList();}
 function addRefSection(){const data=JSON.parse(JSON.stringify(pendingChanges['reference']||referenceData));data.sections.push({id:'new_'+Date.now(),title:'New Section',subtitle:'Description',color:'#6B8AEE',items:[{letter:'A',text:'First item'}]});data.version=(data.version||1)+1;pendingChanges['reference']=data;updateChangeCounter();editRefSection(data.sections.length-1);}
-function initRefDrag(){let d=null;document.querySelectorAll('.ref-item[draggable]').forEach(el=>{el.addEventListener('dragstart',e=>{d=el;el.classList.add('dragging');e.dataTransfer.effectAllowed='move';});el.addEventListener('dragend',()=>{el.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));d=null;});el.addEventListener('dragover',e=>{e.preventDefault();if(d&&d!==el)el.classList.add('drag-over');});el.addEventListener('dragleave',()=>el.classList.remove('drag-over'));el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('drag-over');if(!d||d===el)return;const from=parseInt(d.dataset.refIdx),to=parseInt(el.dataset.refIdx);const data=JSON.parse(JSON.stringify(pendingChanges['reference']||referenceData));const[m]=data.sections.splice(from,1);data.sections.splice(to,0,m);data.version=(data.version||1)+1;pendingChanges['reference']=data;updateChangeCounter();renderRefList();showToast('Reordered','success');});});}
 
 function renderAcrList(){const data=pendingChanges['acronyms']||acronymsData;const list=document.getElementById('acrList');const edit=document.getElementById('acrEdit');list.classList.remove('hidden');edit.classList.add('hidden');const acrs=data?.acronyms||[];const mod=pendingChanges['acronyms']?' <span style="color:var(--gold);font-size:11px;">(modified)</span>':'';let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><div><span style="font-size:18px;font-weight:700;">🔤 Acronym Glossary</span><span style="color:var(--muted);font-size:13px;margin-left:8px;">${acrs.length} entries</span>${mod}</div><button class="btn btn-primary btn-sm" onclick="addAcronym()">+ Add Acronym</button></div><div class="help" style="margin-bottom:12px;">Drag ⠿ to reorder. Click to edit.</div>`;for(let i=0;i<acrs.length;i++){const a=acrs[i];h+=`<div class="acr-item" draggable="true" data-acr-idx="${i}"><span class="drag-handle">⠿</span><span class="acr-badge">${escH(a.acronym)}</span><div style="flex:1;cursor:pointer;" onclick="editAcronym(${i})"><div class="acr-meaning">${escH(a.meaning)}</div><div class="acr-context">${escH(a.context)}</div></div></div>`;}if(!acrs.length)h+='<div class="empty-state"><div class="icon">🔤</div><h3>No Acronyms</h3></div>';list.innerHTML=h;initAcrDrag();}
 function editAcronym(idx){const data=pendingChanges['acronyms']||acronymsData;const a=data.acronyms[idx];document.getElementById('acrList').classList.add('hidden');const edit=document.getElementById('acrEdit');edit.classList.remove('hidden');edit.innerHTML=`<div class="breadcrumb"><a onclick="renderAcrList()">Acronyms</a><span>&rsaquo;</span><span>${escH(a.acronym)}</span></div><div class="editor-panel"><h3>Edit Acronym</h3><div class="field"><label>Acronym</label><input type="text" id="acrAcr" value="${esc(a.acronym)}"></div><div class="field"><label>Full Meaning</label><input type="text" id="acrMean" value="${esc(a.meaning)}"></div><div class="field"><label>Context</label><input type="text" id="acrCtx" value="${esc(a.context)}"></div><div class="editor-actions"><button class="btn btn-danger btn-sm" onclick="delAcronym(${idx})">Delete</button><button class="btn btn-outline" onclick="renderAcrList()">Cancel</button><button class="btn btn-primary" onclick="saveAcronym(${idx})">Save</button></div></div>`;}
 function saveAcronym(idx){const data=JSON.parse(JSON.stringify(pendingChanges['acronyms']||acronymsData));data.acronyms[idx]={acronym:document.getElementById('acrAcr').value.trim(),meaning:document.getElementById('acrMean').value.trim(),context:document.getElementById('acrCtx').value.trim()};data.version=(data.version||1)+1;pendingChanges['acronyms']=data;updateChangeCounter();showToast('Saved','success');renderAcrList();}
 function delAcronym(idx){if(!confirm('Delete?'))return;const data=JSON.parse(JSON.stringify(pendingChanges['acronyms']||acronymsData));data.acronyms.splice(idx,1);data.version=(data.version||1)+1;pendingChanges['acronyms']=data;updateChangeCounter();showToast('Deleted','success');renderAcrList();}
 function addAcronym(){const data=JSON.parse(JSON.stringify(pendingChanges['acronyms']||acronymsData));data.acronyms.push({acronym:'NEW',meaning:'Full meaning',context:'Context'});data.version=(data.version||1)+1;pendingChanges['acronyms']=data;updateChangeCounter();editAcronym(data.acronyms.length-1);}
-function initAcrDrag(){let d=null;document.querySelectorAll('.acr-item[draggable]').forEach(el=>{el.addEventListener('dragstart',e=>{d=el;el.classList.add('dragging');e.dataTransfer.effectAllowed='move';});el.addEventListener('dragend',()=>{el.classList.remove('dragging');document.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'));d=null;});el.addEventListener('dragover',e=>{e.preventDefault();if(d&&d!==el)el.classList.add('drag-over');});el.addEventListener('dragleave',()=>el.classList.remove('drag-over'));el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('drag-over');if(!d||d===el)return;const from=parseInt(d.dataset.acrIdx),to=parseInt(el.dataset.acrIdx);const data=JSON.parse(JSON.stringify(pendingChanges['acronyms']||acronymsData));const[m]=data.acronyms.splice(from,1);data.acronyms.splice(to,0,m);data.version=(data.version||1)+1;pendingChanges['acronyms']=data;updateChangeCounter();renderAcrList();showToast('Reordered','success');});});}
 
 async function submitPR(){const title=document.getElementById('prTitle').value.trim();const desc=document.getElementById('prDescription').value.trim();const btn=document.getElementById('prSubmitBtn');if(!title){showToast('Enter PR title','error');return;}const topicIds=Object.keys(pendingChanges).filter(k=>!k.startsWith('__')&&k!=='reference'&&k!=='acronyms');const hasRef=!!pendingChanges['reference'];const hasAcr=!!pendingChanges['acronyms'];if(!topicIds.length&&!hasRef&&!hasAcr&&!pendingChanges['__manifest']){showToast('No changes','error');return;}btn.disabled=true;btn.textContent='Creating...';try{const mainRef=await apiFetch('git/ref/heads/main');const branch=`content-update-${Date.now()}`;await apiFetch('git/refs',{method:'POST',body:JSON.stringify({ref:`refs/heads/${branch}`,sha:mainRef.object.sha})});async function commitFile(path,content){const encoded=btoa(unescape(encodeURIComponent(content)));let sha=null;try{sha=(await apiFetch(`contents/${path}?ref=main`)).sha;}catch(e){}const body={message:`Update ${path}`,content:encoded,branch};if(sha)body.sha=sha;await apiFetch(`contents/${path}`,{method:'PUT',body:JSON.stringify(body)});}for(const id of topicIds)await commitFile(`${CONTENT_PATH}/${id}.json`,JSON.stringify(pendingChanges[id],null,2));if(hasRef)await commitFile(`${CONTENT_PATH}/reference.json`,JSON.stringify(pendingChanges['reference'],null,2));if(hasAcr)await commitFile(`${CONTENT_PATH}/acronyms.json`,JSON.stringify(pendingChanges['acronyms'],null,2));if(pendingChanges['__manifest']){const m={version:(manifest.version||1)+1,topics:[...new Set([...manifest.topics,...topicIds])]};await commitFile(`${CONTENT_PATH}/manifest.json`,JSON.stringify(m,null,2));}const pr=await apiFetch('pulls',{method:'POST',body:JSON.stringify({title,body:desc||'Via CuffNotes Editor',head:branch,base:'main'})});pendingChanges={};updateChangeCounter();showToast('PR created!','success');window.open(pr.html_url,'_blank');await loadContent();switchTab('topics');}catch(e){showToast('Failed: '+e.message,'error');console.error(e);}btn.disabled=false;btn.textContent='Create Pull Request';}
 
